@@ -4,17 +4,26 @@ import invariant from 'tiny-invariant';
 const maxHorizontalScroll = (dom) => dom.scrollWidth - dom.clientWidth;
 const maxVerticalScroll = (dom) => dom.scrollHeight - dom.clientHeight;
 
-export default (domRef, {
-  onDragStart = () => {},
-  onDragEnd = () => {},
-  runScroll = ({ dx, dy }) => {
-    const offsetX = Math.min(maxHorizontalScroll(domRef.current), domRef.current.scrollLeft + dx);
-    domRef.current.scrollLeft = offsetX; // eslint-disable-line no-param-reassign
+export default (
+  domRef,
+  {
+    onDragStart = () => {},
+    onDragEnd = () => {},
+    runScroll = ({ dx, dy }) => {
+      const offsetX = Math.min(
+        maxHorizontalScroll(domRef.current),
+        domRef.current.scrollLeft + dx,
+      );
+      domRef.current.scrollLeft = offsetX; // eslint-disable-line no-param-reassign
 
-    const offsetY = Math.min(maxVerticalScroll(domRef.current), domRef.current.scrollTop + dy);
-    domRef.current.scrollTop = offsetY; // eslint-disable-line no-param-reassign
-  },
-} = {}) => {
+      const offsetY = Math.min(
+        maxVerticalScroll(domRef.current),
+        domRef.current.scrollTop + dy,
+      );
+      domRef.current.scrollTop = offsetY; // eslint-disable-line no-param-reassign
+    },
+  } = {},
+) => {
   const internalState = useRef({
     lastMouseX: null,
     lastMouseY: null,
@@ -22,12 +31,18 @@ export default (domRef, {
     isScrolling: false,
   });
 
-  const scroll = useCallback(({ dx, dy }) => {
-    invariant(domRef.current !== null, `Trying to scroll to the bottom, but no element was found.
-      Did you call this scrollBottom before the component with this hook finished mounting?`);
+  const scroll = useCallback(
+    ({ dx, dy }) => {
+      invariant(
+        domRef.current !== null,
+        `Trying to scroll to the bottom, but no element was found.
+      Did you call this scrollBottom before the component with this hook finished mounting?`,
+      );
 
-    runScroll({ dx, dy });
-  }, [runScroll]);
+      runScroll({ dx, dy });
+    },
+    [runScroll],
+  );
 
   const onMouseDown = useCallback((e) => {
     internalState.current.isMouseDown = true;
