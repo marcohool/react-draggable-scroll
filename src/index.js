@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
 const maxHorizontalScroll = (dom) => dom.scrollWidth - dom.clientWidth;
@@ -10,17 +10,17 @@ export default (
     onDragStart = () => {},
     onDragEnd = () => {},
     runScroll = ({ dx, dy }) => {
-      const offsetX = Math.min(
+      // eslint-disable-next-line no-param-reassign
+      domRef.current.scrollLeft = Math.min(
         maxHorizontalScroll(domRef.current),
         domRef.current.scrollLeft + dx,
       );
-      domRef.current.scrollLeft = offsetX; // eslint-disable-line no-param-reassign
 
-      const offsetY = Math.min(
+      // eslint-disable-next-line no-param-reassign
+      domRef.current.scrollTop = Math.min(
         maxVerticalScroll(domRef.current),
         domRef.current.scrollTop + dy,
       );
-      domRef.current.scrollTop = offsetY; // eslint-disable-line no-param-reassign
     },
   } = {},
 ) => {
@@ -44,22 +44,40 @@ export default (
     [runScroll],
   );
 
+  const startDragging = useCallback((x, y) => {
+    internalState.current.isDragging = true;
+    internalState.current.lastX = x;
+    internalState.current.lastY = y;
+  }, []);
+
+  const stopDragging = useCallback(() => {
+    internalState.current.isDragging = false;
+    internalState.current.lastX = null;
+    internalState.current.lastY = null;
+
+    if (internalState.current.isScrolling) {
+      internalState.current.isScrolling = false;
+      onDragEnd();
+    }
+  }, [onDragEnd]);
+
   const onMouseDown = useCallback((e) => {
     internalState.current.isMouseDown = true;
     internalState.current.lastMouseX = e.clientX;
     internalState.current.lastMouseY = e.clientY;
   }, []);
 
-  const onMouseUp = () => {
-    internalState.current.isMouseDown = false;
-    internalState.current.lastMouseX = null;
-    internalState.current.lastMouseY = null;
+  const onTouchStart = useCallback(
+    (e) => {
+      const touch = e.touches[0];
+      startDragging(touch.clientX, touch.clientY);
+    },
+    [startDragging],
+  );
 
-    if (internalState.current.isScrolling) {
-      internalState.current.isScrolling = false;
-      onDragEnd();
-    }
-  };
+  const onMouseUp = stopDragging;
+
+  const onTouchEnd = stopDragging;
 
   const onMouseMove = (e) => {
     if (!internalState.current.isMouseDown) {
@@ -80,19 +98,45 @@ export default (
     scroll({ dx, dy });
   };
 
+  const onTouchMove = useCallback(
+    (e) => {
+      if (!internalState.current.isDragging) return;
+
+      if (!internalState.current.isScrolling) {
+        internalState.current.isScrolling = true;
+        onDragStart();
+      }
+
+      const touch = e.touches[0];
+      const dx = -(touch.clientX - internalState.current.lastX);
+      const dy = -(touch.clientY - internalState.current.lastY);
+
+      internalState.current.lastX = touch.clientX;
+      internalState.current.lastY = touch.clientY;
+
+      scroll({ dx, dy });
+    },
+    [scroll, onDragStart],
+  );
+
   useEffect(() => {
     window.addEventListener('mouseup', onMouseUp);
     window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('touchmove', onTouchMove);
 
     return () => {
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchmove', onTouchMove);
     };
-  }, []);
+  }, [onMouseUp, onMouseMove, onTouchEnd, onTouchMove]);
 
   return {
     events: {
       onMouseDown,
+      onTouchStart,
     },
   };
 };

@@ -31,7 +31,9 @@ const ScrollableBox = ({ runScroll }) => {
 
   return (
     <Container {...events} ref={containerRef}>
-      {[...Array(30).keys()].map(i => <Box key={i} />)}
+      {[...Array.from({ length: 30 }).keys()].map((i) => (
+        <Box key={i} />
+      ))}
     </Container>
   );
 };
@@ -49,14 +51,13 @@ const App = () => (
     <div>Default runScroll, scrolls both x and y directions:</div>
     <ScrollableBox />
     <div>Scrolls only x direction at 5 times the normal speed:</div>
-    <ScrollableBox runScroll={containerRef => ({ dx }) => {
-      containerRef.current.scrollLeft += dx * 5; // eslint-disable-line no-param-reassign
-    }}
+    <ScrollableBox
+      runScroll={(containerRef) =>
+        ({ dx }) => {
+          containerRef.current.scrollLeft += dx * 5; // eslint-disable-line no-param-reassign
+        }}
     />
   </>
 );
 
-render(
-  <App />,
-  document.getElementById('demo'),
-);
+render(<App />, document.querySelector('#demo'));
