@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",                     // Output modern JavaScript.
+    "module": "ESNext",                    // Use ES modules, as Rollup supports tree-shaking.
+    "moduleResolution": "Node",           // Resolve module imports like Node.js.
+    "strict": true,                        // Enable all strict type-checking options.
+    "jsx": "react-jsx",                    // Use the React 17 JSX runtime.
+    "esModuleInterop": true,               // Ensure compatibility with CommonJS.
+    "skipLibCheck": true,                  // Skip type-checking of declaration files.
+    "declaration": true,                   // Generate type definitions (.d.ts files).
+    "declarationMap": true,                // Include source maps for type definitions.
+    "sourceMap": true,                     // Include source maps for debugging.
+    "outDir": "./dist",                    // Output directory for compiled files.
+    "allowSyntheticDefaultImports": true, // Allow default imports from CommonJS.
+    "resolveJsonModule": true              // Allow importing JSON modules.
+  },
+  "include": ["src"],                      // Include the source directory.
+  "exclude": ["node_modules", "public"]   // Exclude node_modules and the public folder.
+}

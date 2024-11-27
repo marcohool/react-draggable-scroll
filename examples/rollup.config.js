@@ -8,7 +8,7 @@ import livereload from 'rollup-plugin-livereload';
 const env = process.env.NODE_ENV || 'development';
 
 export default {
-  input: './src/main.jsx',
+  input: './src/main.tsx',
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify(env),
@@ -16,10 +16,7 @@ export default {
     babel({
       exclude: ['node_modules/**', '../node_modules/**'],
       babelrc: false,
-      presets: [
-        '@babel/env',
-        ['@babel/react', { runtime: 'automatic' }],
-      ],
+      presets: ['@babel/env', ['@babel/react', { runtime: 'automatic' }]],
       babelHelpers: 'bundled',
     }),
     resolve({

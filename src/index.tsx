@@ -1,38 +1,48 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
-const maxHorizontalScroll = (dom) => dom.scrollWidth - dom.clientWidth;
-const maxVerticalScroll = (dom) => dom.scrollHeight - dom.clientHeight;
+type RunScrollParams = {
+  dx: number;
+  dy: number;
+};
+
+const maxHorizontalScroll = (dom: HTMLElement) =>
+  dom.scrollWidth - dom.clientWidth;
+
+const maxVerticalScroll = (dom: HTMLElement) =>
+  dom.scrollHeight - dom.clientHeight;
 
 export default (
-  domRef,
+  domRef: RefObject<HTMLElement>,
   {
     onDragStart = () => {},
     onDragEnd = () => {},
-    runScroll = ({ dx, dy }) => {
-      // eslint-disable-next-line no-param-reassign
-      domRef.current.scrollLeft = Math.min(
-        maxHorizontalScroll(domRef.current),
-        domRef.current.scrollLeft + dx,
-      );
+    runScroll = ({ dx, dy }: RunScrollParams) => {
+      const element = domRef.current;
 
-      // eslint-disable-next-line no-param-reassign
-      domRef.current.scrollTop = Math.min(
-        maxVerticalScroll(domRef.current),
-        domRef.current.scrollTop + dy,
-      );
+      if (element) {
+        element.scrollLeft = Math.min(
+          maxHorizontalScroll(domRef.current),
+          domRef.current.scrollLeft + dx,
+        );
+
+        element.scrollTop = Math.min(
+          maxVerticalScroll(domRef.current),
+          domRef.current.scrollTop + dy,
+        );
+      }
     },
   } = {},
 ) => {
   const internalState = useRef({
-    lastMouseX: null,
-    lastMouseY: null,
-    isMouseDown: false,
+    lastX: null,
+    lastY: null,
+    isDragging: false,
     isScrolling: false,
   });
 
   const scroll = useCallback(
-    ({ dx, dy }) => {
+    ({ dx, dy }: RunScrollParams) => {
       invariant(
         domRef.current !== null,
         `Trying to scroll to the bottom, but no element was found.
@@ -44,7 +54,7 @@ export default (
     [runScroll],
   );
 
-  const startDragging = useCallback((x, y) => {
+  const startDragging = useCallback((x: number, y: number) => {
     internalState.current.isDragging = true;
     internalState.current.lastX = x;
     internalState.current.lastY = y;
@@ -62,9 +72,9 @@ export default (
   }, [onDragEnd]);
 
   const onMouseDown = useCallback((e) => {
-    internalState.current.isMouseDown = true;
-    internalState.current.lastMouseX = e.clientX;
-    internalState.current.lastMouseY = e.clientY;
+    internalState.current.isDragging = true;
+    internalState.current.lastX = e.clientX;
+    internalState.current.lastY = e.clientY;
   }, []);
 
   const onTouchStart = useCallback(
@@ -80,7 +90,7 @@ export default (
   const onTouchEnd = stopDragging;
 
   const onMouseMove = (e) => {
-    if (!internalState.current.isMouseDown) {
+    if (!internalState.current.isDragging) {
       return;
     }
 
@@ -90,10 +100,10 @@ export default (
     }
 
     // diff is negative because we want to scroll in the opposite direction of the movement
-    const dx = -(e.clientX - internalState.current.lastMouseX);
-    const dy = -(e.clientY - internalState.current.lastMouseY);
-    internalState.current.lastMouseX = e.clientX;
-    internalState.current.lastMouseY = e.clientY;
+    const dx = -(e.clientX - internalState.current.lastX);
+    const dy = -(e.clientY - internalState.current.lastY);
+    internalState.current.lastX = e.clientX;
+    internalState.current.lastY = e.clientY;
 
     scroll({ dx, dy });
   };
