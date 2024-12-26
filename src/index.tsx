@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useRef } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
 type RunScrollParams = {
@@ -34,7 +34,12 @@ export default (
     },
   } = {},
 ) => {
-  const internalState = useRef({
+  const internalState = useRef<{
+    lastX: number | null;
+    lastY: number | null;
+    isDragging: boolean;
+    isScrolling: boolean;
+  }>({
     lastX: null,
     lastY: null,
     isDragging: false,
@@ -71,14 +76,14 @@ export default (
     }
   }, [onDragEnd]);
 
-  const onMouseDown = useCallback((e) => {
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
     internalState.current.isDragging = true;
     internalState.current.lastX = e.clientX;
     internalState.current.lastY = e.clientY;
   }, []);
 
   const onTouchStart = useCallback(
-    (e) => {
+    (e: React.TouchEvent) => {
       const touch = e.touches[0];
       startDragging(touch.clientX, touch.clientY);
     },
@@ -89,7 +94,7 @@ export default (
 
   const onTouchEnd = stopDragging;
 
-  const onMouseMove = (e) => {
+  const onMouseMove = (e: MouseEvent) => {
     if (!internalState.current.isDragging) {
       return;
     }
@@ -100,8 +105,8 @@ export default (
     }
 
     // diff is negative because we want to scroll in the opposite direction of the movement
-    const dx = -(e.clientX - internalState.current.lastX);
-    const dy = -(e.clientY - internalState.current.lastY);
+    const dx = -(e.clientX - (internalState.current.lastX ?? 0));
+    const dy = -(e.clientY - (internalState.current.lastY ?? 0));
     internalState.current.lastX = e.clientX;
     internalState.current.lastY = e.clientY;
 
@@ -109,7 +114,7 @@ export default (
   };
 
   const onTouchMove = useCallback(
-    (e) => {
+    (e: TouchEvent) => {
       if (!internalState.current.isDragging) return;
 
       if (!internalState.current.isScrolling) {
@@ -118,8 +123,8 @@ export default (
       }
 
       const touch = e.touches[0];
-      const dx = -(touch.clientX - internalState.current.lastX);
-      const dy = -(touch.clientY - internalState.current.lastY);
+      const dx = -(touch.clientX - (internalState.current.lastX ?? 0));
+      const dy = -(touch.clientY - (internalState.current.lastY ?? 0));
 
       internalState.current.lastX = touch.clientX;
       internalState.current.lastY = touch.clientY;
