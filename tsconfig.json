@@ -14,6 +14,6 @@
     "allowSyntheticDefaultImports": true, // Allow default imports from CommonJS.
     "resolveJsonModule": true              // Allow importing JSON modules.
   },
-  "include": ["src"],                      // Include the source directory.
+  "include": ["src", "examples"],                      // Include the source directory.
   "exclude": ["node_modules", "public"]   // Exclude node_modules and the public folder.
 }

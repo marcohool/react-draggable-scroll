@@ -3,6 +3,7 @@
   "version": "4.0.0",
   "description": "React library for scrolling elements by dragging the mouse",
   "main": "dist/index.js",
+  "types": "dist/src/index.d.ts",
   "module": "dist/index.js",
   "type": "module",
   "engines": {
@@ -17,6 +18,7 @@
     "test": "karma start karma.conf.cjs --single-run --no-auto-watch",
     "tdd": "karma start karma.conf.cjs",
     "build": "babel src -s -d dist --extensions '.ts,.tsx,.js,.jsx' --ignore '**/*.test.*'",
+    "types": "tsc --emitDeclarationOnly",
     "prepare": "npm run build"
   },
   "files": [
