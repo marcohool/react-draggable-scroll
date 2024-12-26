@@ -1,7 +1,0 @@
-node_modules
-dist
-coverage
-examples/public/*
-!examples/public/index.html
-.eslintcache
-.idea
