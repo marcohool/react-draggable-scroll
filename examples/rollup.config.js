@@ -4,12 +4,18 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import typescript from '@rollup/plugin-typescript';
 
 const env = process.env.NODE_ENV || 'development';
 
 export default {
   input: './src/main.tsx',
   plugins: [
+    resolve({
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    }),
+    commonjs({ include: ['node_modules/**', '../node_modules/**'] }),
+    typescript({ tsconfig: '../tsconfig.json' }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
@@ -19,10 +25,6 @@ export default {
       presets: ['@babel/env', ['@babel/react', { runtime: 'automatic' }]],
       babelHelpers: 'bundled',
     }),
-    resolve({
-      extensions: ['.js', '.jsx'],
-    }),
-    commonjs({ include: ['node_modules/**', '../node_modules/**'] }),
     serve({
       contentBase: 'public',
       port: process.env.PORT || 3000,

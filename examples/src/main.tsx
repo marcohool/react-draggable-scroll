@@ -1,8 +1,7 @@
-import { useRef } from 'react';
+import { RefObject, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { render } from 'react-dom';
-import useScrollOnDrag from 'react-scroll-ondrag';
 import styled from 'styled-components';
+import useScrollOnDrag from 'react-scroll-ondrag';
 
 const Container = styled.div`
   display: inline-block;
@@ -23,7 +22,13 @@ const Box = styled.div`
   background: linear-gradient(red, yellow);
 `;
 
-const ScrollableBox = ({ runScroll }) => {
+const ScrollableBox = ({
+  runScroll,
+}: {
+  runScroll?: (
+    containerRef: RefObject<HTMLDivElement>,
+  ) => (args: { dx: number; dy: number }) => void;
+}) => {
   const containerRef = useRef(null);
   const { events } = useScrollOnDrag(containerRef, {
     runScroll: runScroll && runScroll(containerRef),
@@ -53,8 +58,10 @@ const App = () => (
     <div>Scrolls only x direction at 5 times the normal speed:</div>
     <ScrollableBox
       runScroll={(containerRef) =>
-        ({ dx }) => {
-          containerRef.current.scrollLeft += dx * 5; // eslint-disable-line no-param-reassign
+        ({ dx }: { dx: number }) => {
+          if (containerRef.current) {
+            containerRef.current.scrollLeft += dx * 5;
+          }
         }}
     />
   </>
