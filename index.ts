@@ -13,7 +13,7 @@ const maxVerticalScroll = (dom: HTMLElement) =>
   dom.scrollHeight - dom.clientHeight;
 
 export default (
-  domRef: RefObject<HTMLElement>,
+  domRef: RefObject<HTMLElement | null>,
   {
     onDragStart = () => {},
     onDragEnd = () => {},
@@ -22,13 +22,13 @@ export default (
 
       if (element) {
         element.scrollLeft = Math.min(
-          maxHorizontalScroll(domRef.current),
-          domRef.current.scrollLeft + dx,
+          maxHorizontalScroll(element),
+          element.scrollLeft + dx,
         );
 
         element.scrollTop = Math.min(
-          maxVerticalScroll(domRef.current),
-          domRef.current.scrollTop + dy,
+          maxVerticalScroll(element),
+          element.scrollTop + dy,
         );
       }
     },

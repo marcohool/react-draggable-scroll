@@ -1,5 +1,5 @@
 {
-  "name": "react-scroll-ondrag",
+  "name": "react-draggable-scroll",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
