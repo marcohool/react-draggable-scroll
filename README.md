@@ -1,6 +1,6 @@
 # react-draggable-scroll
 
-react-draggable-scroll is a React package that provides the ability to scroll by just dragging. It is largely based on [react-scroll-ondrag](https://github.com/dotcore64/react-scroll-ondrag), but cleaned up and with added functionality to support draggable scroll for mobile.
+react-draggable-scroll is a React package that provides the ability to scroll by dragging the content. It is largely based on [react-scroll-ondrag](https://github.com/dotcore64/react-scroll-ondrag), but cleaned up and with added functionality to support draggable scroll for mobile.
 
 ## Installation
 
@@ -40,7 +40,7 @@ const MyComponent = () => {
 
 ## License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License.
 
 For more details, refer to the LICENSE file.
 
