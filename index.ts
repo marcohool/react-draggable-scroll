@@ -17,6 +17,7 @@ export default (
   {
     onDragStart = () => {},
     onDragEnd = () => {},
+    onSingleClick = () => {},
     runScroll = ({ dx, dy }: RunScrollParams) => {
       const element = domRef.current;
 
@@ -66,6 +67,8 @@ export default (
   }, []);
 
   const stopDragging = useCallback(() => {
+    if (!internalState.current.isDragging) return;
+
     internalState.current.isDragging = false;
     internalState.current.lastX = null;
     internalState.current.lastY = null;
@@ -73,14 +76,17 @@ export default (
     if (internalState.current.isScrolling) {
       internalState.current.isScrolling = false;
       onDragEnd();
+    } else {
+      onSingleClick();
     }
   }, [onDragEnd]);
 
-  const onMouseDown = useCallback((e: React.MouseEvent) => {
-    internalState.current.isDragging = true;
-    internalState.current.lastX = e.clientX;
-    internalState.current.lastY = e.clientY;
-  }, []);
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      startDragging(e.clientX, e.clientY);
+    },
+    [startDragging],
+  );
 
   const onTouchStart = useCallback(
     (e: React.TouchEvent) => {
@@ -94,7 +100,7 @@ export default (
 
   const onTouchEnd = stopDragging;
 
-  const onMouseMove = (e: MouseEvent) => {
+  const onMove = (e: MouseEvent | TouchEvent) => {
     if (!internalState.current.isDragging) {
       return;
     }
@@ -104,34 +110,28 @@ export default (
       onDragStart();
     }
 
-    // diff is negative because we want to scroll in the opposite direction of the movement
-    const dx = -(e.clientX - (internalState.current.lastX ?? 0));
-    const dy = -(e.clientY - (internalState.current.lastY ?? 0));
-    internalState.current.lastX = e.clientX;
-    internalState.current.lastY = e.clientY;
+    const event = e instanceof TouchEvent ? e.touches[0] : e;
+
+    const dx = -(event.clientX - (internalState.current.lastX ?? 0));
+    const dy = -(event.clientY - (internalState.current.lastY ?? 0));
+    internalState.current.lastX = event.clientX;
+    internalState.current.lastY = event.clientY;
 
     scroll({ dx, dy });
   };
 
+  const onMouseMove = useCallback(
+    (e: MouseEvent) => {
+      onMove(e);
+    },
+    [onMove],
+  );
+
   const onTouchMove = useCallback(
     (e: TouchEvent) => {
-      if (!internalState.current.isDragging) return;
-
-      if (!internalState.current.isScrolling) {
-        internalState.current.isScrolling = true;
-        onDragStart();
-      }
-
-      const touch = e.touches[0];
-      const dx = -(touch.clientX - (internalState.current.lastX ?? 0));
-      const dy = -(touch.clientY - (internalState.current.lastY ?? 0));
-
-      internalState.current.lastX = touch.clientX;
-      internalState.current.lastY = touch.clientY;
-
-      scroll({ dx, dy });
+      onMove(e);
     },
-    [scroll, onDragStart],
+    [onMove],
   );
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { RefObject, useRef } from "react";
+import { RefObject, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import useScrollOnDrag from "react-scroll-ondrag";
@@ -24,14 +24,23 @@ const Box = styled.div`
 
 const ScrollableBox = ({
   runScroll,
+  handleSingleClick,
 }: {
   runScroll?: (
     containerRef: RefObject<HTMLDivElement>,
   ) => (args: { dx: number; dy: number }) => void;
+  handleSingleClick?: () => void;
 }) => {
   const containerRef = useRef(null);
+
   const { events } = useScrollOnDrag(containerRef, {
     runScroll: runScroll && runScroll(containerRef),
+    onDragStart: () => {},
+    onSingleClick: () => {
+      if (handleSingleClick) {
+        handleSingleClick();
+      }
+    },
   });
 
   return (
@@ -52,10 +61,15 @@ ScrollableBox.defaultProps = {
 };
 
 function App() {
+  const [clickedIndex, setClickedIndex] = useState<number>(0);
+
   return (
     <>
+      <h2>Click count (without dragging): {clickedIndex}</h2>
       <div>Default runScroll, scrolls both x and y directions:</div>
-      <ScrollableBox />
+      <ScrollableBox
+        handleSingleClick={() => setClickedIndex(clickedIndex + 1)}
+      />
       <div>Scrolls only x direction at 5 times the normal speed:</div>
       <ScrollableBox
         runScroll={(containerRef) =>
@@ -64,6 +78,7 @@ function App() {
               containerRef.current.scrollLeft += dx * 5;
             }
           }}
+        handleSingleClick={() => setClickedIndex(clickedIndex + 1)}
       />
     </>
   );
