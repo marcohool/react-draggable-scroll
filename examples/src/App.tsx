@@ -1,7 +1,7 @@
 import { RefObject, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import useScrollOnDrag from "react-scroll-ondrag";
+import useScrollOnDrag from "react-draggable-scroll";
 
 const Container = styled.div`
   display: inline-block;
