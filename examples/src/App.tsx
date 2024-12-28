@@ -1,7 +1,7 @@
-import { RefObject, useRef } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import useScrollOnDrag from 'react-scroll-ondrag';
+import { RefObject, useRef } from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import useScrollOnDrag from "react-scroll-ondrag";
 
 const Container = styled.div`
   display: inline-block;
@@ -51,7 +51,6 @@ ScrollableBox.defaultProps = {
   runScroll: undefined,
 };
 
-
 function App() {
   return (
     <>
@@ -67,7 +66,7 @@ function App() {
           }}
       />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

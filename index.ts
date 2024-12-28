@@ -1,5 +1,5 @@
-import React, { RefObject, useCallback, useEffect, useRef } from 'react';
-import invariant from 'tiny-invariant';
+import React, { RefObject, useCallback, useEffect, useRef } from "react";
+import invariant from "tiny-invariant";
 
 type RunScrollParams = {
   dx: number;
@@ -135,16 +135,16 @@ export default (
   );
 
   useEffect(() => {
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("touchmove", onTouchMove);
 
     return () => {
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchmove", onTouchMove);
     };
   }, [onMouseUp, onMouseMove, onTouchEnd, onTouchMove]);
 

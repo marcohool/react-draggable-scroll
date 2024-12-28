@@ -21,14 +21,18 @@ yarn add react-draggable-scroll
 Here is a basic example of how to use `react-draggable-scroll`:
 
 ```jsx
-import React, { useRef } from 'react';
-import useScrollOnDrag from 'react-draggable-scroll';
+import React, { useRef } from "react";
+import useScrollOnDrag from "react-draggable-scroll";
 
 const MyComponent = () => {
   const containerRef = useRef(null);
   const { events } = useScrollOnDrag(containerRef);
 
-  return <div {...events} ref={containerRef}>Your scrollable content here</div>;
+  return (
+    <div {...events} ref={containerRef}>
+      Your scrollable content here
+    </div>
+  );
 };
 ```
 
