@@ -79,7 +79,7 @@ export default (
     } else {
       onSingleClick();
     }
-  }, [onDragEnd]);
+  }, [onDragEnd, onSingleClick]);
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -100,25 +100,28 @@ export default (
 
   const onTouchEnd = stopDragging;
 
-  const onMove = (e: MouseEvent | TouchEvent) => {
-    if (!internalState.current.isDragging) {
-      return;
-    }
+  const onMove = useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      if (!internalState.current.isDragging) {
+        return;
+      }
 
-    if (!internalState.current.isScrolling) {
-      internalState.current.isScrolling = true;
-      onDragStart();
-    }
+      if (!internalState.current.isScrolling) {
+        internalState.current.isScrolling = true;
+        onDragStart();
+      }
 
-    const event = e instanceof TouchEvent ? e.touches[0] : e;
+      const event = e instanceof TouchEvent ? e.touches[0] : e;
 
-    const dx = -(event.clientX - (internalState.current.lastX ?? 0));
-    const dy = -(event.clientY - (internalState.current.lastY ?? 0));
-    internalState.current.lastX = event.clientX;
-    internalState.current.lastY = event.clientY;
+      const dx = -(event.clientX - (internalState.current.lastX ?? 0));
+      const dy = -(event.clientY - (internalState.current.lastY ?? 0));
+      internalState.current.lastX = event.clientX;
+      internalState.current.lastY = event.clientY;
 
-    scroll({ dx, dy });
-  };
+      scroll({ dx, dy });
+    },
+    [scroll, onDragStart],
+  );
 
   const onMouseMove = useCallback(
     (e: MouseEvent) => {

@@ -1,4 +1,4 @@
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useCallback, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import useScrollOnDrag from "react-draggable-scroll";
@@ -12,6 +12,7 @@ const Container = styled.div`
   border: 1px solid #000;
   padding: 0 5px;
   white-space: nowrap;
+  user-select: none;
 `;
 
 const Box = styled.div`
@@ -20,6 +21,7 @@ const Box = styled.div`
   margin: 5px 10px;
   width: 250px;
   background: linear-gradient(red, yellow);
+  user-select: none;
 `;
 
 const ScrollableBox = ({
@@ -35,12 +37,11 @@ const ScrollableBox = ({
 
   const { events } = useScrollOnDrag(containerRef, {
     runScroll: runScroll && runScroll(containerRef),
-    onDragStart: () => {},
-    onSingleClick: () => {
+    onSingleClick: useCallback(() => {
       if (handleSingleClick) {
         handleSingleClick();
       }
-    },
+    }, [handleSingleClick]),
   });
 
   return (
