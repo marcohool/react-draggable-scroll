@@ -96,9 +96,14 @@ export default (
     [startDragging],
   );
 
-  const onMouseUp = stopDragging;
-
-  const onTouchEnd = stopDragging;
+  const onMouseUp = () => {
+    stopDragging();
+  };
+  const onTouchEnd = () => {
+    internalState.current.isDragging = false;
+    internalState.current.lastX = null;
+    internalState.current.lastY = null;
+  };
 
   const onMove = useCallback(
     (e: MouseEvent | TouchEvent) => {
