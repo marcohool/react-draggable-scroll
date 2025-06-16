@@ -60,10 +60,23 @@ export default (
     [runScroll],
   );
 
+  useEffect(() => {
+    if (domRef.current) {
+      domRef.current.style.cursor = "grab";
+    }
+  }, []);
+
+  const setCursorDragging = (dragging: boolean) => {
+    if (domRef.current) {
+      domRef.current.style.cursor = dragging ? "grabbing" : "grab";
+    }
+  };
+
   const startDragging = useCallback((x: number, y: number) => {
     internalState.current.isDragging = true;
     internalState.current.lastX = x;
     internalState.current.lastY = y;
+    setCursorDragging(true);
   }, []);
 
   const stopDragging = useCallback(() => {
@@ -72,6 +85,7 @@ export default (
     internalState.current.isDragging = false;
     internalState.current.lastX = null;
     internalState.current.lastY = null;
+    setCursorDragging(false);
 
     if (internalState.current.isScrolling) {
       internalState.current.isScrolling = false;
