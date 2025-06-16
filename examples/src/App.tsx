@@ -13,6 +13,7 @@ const Container = styled.div`
   padding: 0 5px;
   white-space: nowrap;
   user-select: none;
+  touch-action: none;
 `;
 
 const Box = styled.div`
