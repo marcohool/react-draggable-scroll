@@ -17,7 +17,8 @@ export default (
   {
     onDragStart = () => {},
     onDragEnd = () => {},
-    onSingleClick = () => {},
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onSingleClick = (_event?: React.MouseEvent | React.TouchEvent | null) => {},
     runScroll = ({ dx, dy }: RunScrollParams) => {
       const element = domRef.current;
 
@@ -40,11 +41,13 @@ export default (
     lastY: number | null;
     isDragging: boolean;
     isScrolling: boolean;
+    originalEvent: React.MouseEvent | React.TouchEvent | null;
   }>({
     lastX: null,
     lastY: null,
     isDragging: false,
     isScrolling: false,
+    originalEvent: null,
   });
 
   const scroll = useCallback(
@@ -72,32 +75,35 @@ export default (
     }
   };
 
-  const startDragging = useCallback((x: number, y: number) => {
+  const startDragging = useCallback((x: number, y: number, event: React.MouseEvent | React.TouchEvent) => {
     internalState.current.isDragging = true;
     internalState.current.lastX = x;
     internalState.current.lastY = y;
+    internalState.current.originalEvent = event;
     setCursorDragging(true);
   }, []);
 
   const stopDragging = useCallback(() => {
     if (!internalState.current.isDragging) return;
 
+    const originalEvent = internalState.current.originalEvent;
     internalState.current.isDragging = false;
     internalState.current.lastX = null;
     internalState.current.lastY = null;
+    internalState.current.originalEvent = null;
     setCursorDragging(false);
 
     if (internalState.current.isScrolling) {
       internalState.current.isScrolling = false;
       onDragEnd();
     } else {
-      onSingleClick();
+      onSingleClick(originalEvent);
     }
   }, [onDragEnd, onSingleClick]);
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      startDragging(e.clientX, e.clientY);
+      startDragging(e.clientX, e.clientY, e);
     },
     [startDragging],
   );
@@ -105,7 +111,7 @@ export default (
   const onTouchStart = useCallback(
     (e: React.TouchEvent) => {
       const touch = e.touches[0];
-      startDragging(touch.clientX, touch.clientY);
+      startDragging(touch.clientX, touch.clientY, e);
     },
     [startDragging],
   );
