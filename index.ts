@@ -136,7 +136,7 @@ export default (
         onDragStart();
       }
 
-      const event = e instanceof TouchEvent ? e.touches[0] : e;
+      const event = "touches" in e ? e.touches[0] : e;
 
       const dx = -(event.clientX - (internalState.current.lastX ?? 0));
       const dy = -(event.clientY - (internalState.current.lastY ?? 0));
